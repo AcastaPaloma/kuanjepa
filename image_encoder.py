@@ -3,8 +3,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from transformer import Block
+from dataloader import DataLoader
 
-class ImageEncoder(nn.module):
+class ImageEncoder(nn.Module):
     def __init__(self):
         super().__init__()
 
@@ -55,18 +56,30 @@ class ImageEncoder(nn.module):
             self.convStem4
         )
 
-        self.pos_emb = nn.Parameter(1, 64, 256)
+        self.pos_emb = nn.Parameter(torch.zeros(1, 64, 256))
 
         # transformer blocks
         self.blocks = nn.ModuleList([Block() for _ in range(6)])
-
+        self.ln = nn.LayerNorm(256, eps=1e-6)
 
     def forward(self, raw_image):
+        # raw_image: (B, 3, 128, 128)
         x = self.convStem(raw_image)              # (B, 256, 8, 8)
         tokens = x.flatten(2).transpose(1, 2)     # (B, 64, 256)
         tokens += self.pos_emb                    # (B, 64, 256)
 
-conv_channels = []
+        for blk in self.blocks:
+            tokens = blk(tokens)
 
-### REFERENCE SHEET
-# nn.GroupNorm(num_groups=4, num_channels=16)  # 16 channels -> 4 groups of 4
+        tokens = self.ln(tokens)
+        return tokens
+
+if __name__ == "__main__":
+    model = ImageEncoder()
+    DL = DataLoader()
+
+    raw_images = DL.get_batch(batch_size=8)
+    print(raw_images.shape)                       # (8, 3, 128, 128)
+
+    output = model(raw_images)
+    print(output.shape)                           # (8, 64, 256)
