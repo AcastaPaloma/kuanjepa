@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from transformer import Block
+from models.transformer import Block
 from dataloader import DataLoader
 
 class ImageEncoder(nn.Module):
@@ -78,8 +78,9 @@ if __name__ == "__main__":
     model = ImageEncoder()
     DL = DataLoader()
 
-    raw_images = DL.get_batch(batch_size=8)
-    print(raw_images.shape)                       # (8, 3, 128, 128)
+    B = 8
+    raw_images, _, _ = DL.get_batch(batch_size=B)
+    print(raw_images.shape)                       # (B, 3, 128, 128)
 
     output = model(raw_images)
-    print(output.shape)                           # (8, 64, 256)
+    print(output.shape)                           # (B, 64, 256)

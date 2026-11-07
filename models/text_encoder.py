@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from transformer import Block
+from models.transformer import Block
 from dataloader import DataLoader
 
 class TextEncoder(nn.Module):
@@ -26,9 +26,10 @@ class TextEncoder(nn.Module):
 
 if __name__ == "__main__":
     DL = DataLoader()
-    imgs, ids, mask = DL.get_batch(batch_size=8)  # same row i = same image/caption pair
-    print(ids.shape, mask.shape)                  # (8, 32), (8, 32)
+    B = 8
+    imgs, ids, mask = DL.get_batch(batch_size=B)  # same row i = same image/caption pair
+    print(ids.shape, mask.shape)                  # (B, 32), (B, 32)
 
     model = TextEncoder(vocab_size=len(DL.vocab), max_len=DL.max_len)
     output = model(ids, mask)
-    print(output.shape)                           # (8, 32, 256)
+    print(output.shape)                           # (B, 32, 256)
