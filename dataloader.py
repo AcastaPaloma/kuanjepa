@@ -101,6 +101,27 @@ class DataLoader():
         return vocab
 
 
+class PairDataset(torch.utils.data.Dataset):
+    """(image, ids, mask) per Flickr30k index, so torch's DataLoader can decode in parallel workers.
+    Train: random augmentation + one of the 5 captions at random.
+    Val:   fixed center crop + caption 0, so val loss is comparable across epochs."""
+    def __init__(self, DL, indices, train=True):
+        DL._setup_text()
+        self.DL, self.indices, self.train = DL, indices, train
+
+    def __len__(self):
+        return len(self.indices)
+
+    def __getitem__(self, k):
+        i = self.indices[k]
+        img = self.DL.ds['test'][i]['image'].convert('RGB')
+        tfm = self.DL.train_tfm if self.train else self.DL.val_tfm
+        caps = self.DL.captions[i]
+        cap = caps[torch.randint(0, len(caps), (1,)).item()] if self.train else caps[0]
+        ids, mask = self.DL.encode(cap)
+        return tfm(img), ids, mask
+
+
 if __name__ == "__main__":
     DL = DataLoader()
     imgs, ids, mask = DL.get_batch(4)
