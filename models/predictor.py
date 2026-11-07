@@ -1,7 +1,10 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
 from models.transformer import Block
+
+device = torch.device("mps")
 
 class Predictor(nn.Module):
     def __init__(self):
@@ -19,7 +22,7 @@ class Predictor(nn.Module):
         batch_count = visual_tokens.shape[0]
 
         x = self.linear1(visual_tokens)
-        q_in= torch.zeros(size=(batch_count, 1, 256))
+        q_in= torch.zeros(size=(batch_count, 1, 256)).to(device)
 
         together = torch.cat([x, q_in], dim=1)
 

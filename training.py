@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 import math
+import os
 
 from models.image_encoder import ImageEncoder
 from models.text_encoder import TextEncoder
@@ -37,6 +38,9 @@ if __name__ == "__main__":
         {"params": criterion_params, "weight_decay": 0.0},   # t
     ], lr=5e-4, betas=(0.9, 0.98), eps=1e-8) ### MPS
 
+    os.makedirs("checkpoints", exist_ok=True)
+    best_val = float("inf")
+
     B = 256
     train_idx = DL.train_idx
     steps_per_epoch = len(train_idx) // B
@@ -52,6 +56,8 @@ if __name__ == "__main__":
             imgs, ids, mask = imgs.to(device), ids.to(device), mask.to(device)
 
             visual_tokens = image_encoder(imgs)                      # (B, 64, 256)
+            print("VISUAL TOKENS DEVICE: ", visual_tokens.device)
+
             pred = predictor(visual_tokens).squeeze(1)               # (B, (1), 256), unit norm
             print("visual tokens", tuple(visual_tokens.shape), "pred", tuple(pred.shape))
 
@@ -61,7 +67,7 @@ if __name__ == "__main__":
             print("text tokens", tuple(text_tokens.shape), "target", tuple(target.shape))
 
             ### LOSS & OPTIMIZER ###
-            loss = criterion_params(pred, target) ### MPS
+            loss = criterion(pred, target) ### MPS
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
@@ -72,35 +78,36 @@ if __name__ == "__main__":
             print("loss", loss.item())
             print("grad reaches image encoder:", image_encoder.convStem1[0].weight.grad is not None)
 
-            ### VALIDATION ###
-            image_encoder.eval(); predictor.eval(); text_encoder.eval()
-            val_losses = []
-            with torch.no_grad():
-                val_idx = DL.val_idx
-                for i in range(len(val_idx) // B):
-                    batch_idx = val_idx[i * B:(i + 1) * B]
-                    imgs, ids, mask = DL.get_batch(indices=batch_idx)
+        ### VALIDATION ###
+        image_encoder.eval(); predictor.eval(); text_encoder.eval()
+        val_losses = []
+        with torch.no_grad():
+            val_idx = DL.val_idx
+            for i in range(len(val_idx) // B):
+                batch_idx = val_idx[i * B:(i + 1) * B]
+                imgs, ids, mask = DL.get_batch(indices=batch_idx, train=False)
+                imgs, ids, mask = imgs.to(device), ids.to(device), mask.to(device)
 
-                    pred = predictor(image_encoder(imgs)).squeeze(1)
-                    text_tokens = text_encoder(ids, mask)
-                    target = F.normalize(masked_mean(text_tokens, mask), p=2, dim=-1)
+                pred = predictor(image_encoder(imgs)).squeeze(1)
+                text_tokens = text_encoder(ids, mask)
+                target = F.normalize(masked_mean(text_tokens, mask), p=2, dim=-1)
 
-                    val_losses.append(criterion(pred, target).item())
-            val_loss = sum(val_losses) / len(val_losses)
-            image_encoder.train(); predictor.train()   # text_encoder stays frozen/eval if it's the target
+                val_losses.append(criterion(pred, target).item())
+        val_loss = sum(val_losses) / len(val_losses)
+        image_encoder.train(); predictor.train(); text_encoder.train()
 
-            print(f"epoch {epoch} val_loss {val_loss:.4f} (best {best_val:.4f})")
+        print(f"epoch {epoch} val_loss {val_loss:.4f} (best {best_val:.4f})")
 
-            ### SAVE IF BEST ###
-            if val_loss < best_val:
-                best_val = val_loss
-                torch.save({
-                    "epoch": epoch,
-                    "val_loss": val_loss,
-                    "image_encoder": image_encoder.state_dict(),
-                    "text_encoder": text_encoder.state_dict(),
-                    "predictor": predictor.state_dict(),
-                    "criterion": criterion.state_dict(),   # keeps the learned temperature
-                    "optimizer": optimizer.state_dict(),
-                }, "checkpoints/best.pt")
-                print(f"  saved new best -> checkpoints/best.pt")
+        ### SAVE IF BEST ###
+        if val_loss < best_val:
+            best_val = val_loss
+            torch.save({
+                "epoch": epoch,
+                "val_loss": val_loss,
+                "image_encoder": image_encoder.state_dict(),
+                "text_encoder": text_encoder.state_dict(),
+                "predictor": predictor.state_dict(),
+                "criterion": criterion.state_dict(),   # keeps the learned temperature
+                "optimizer": optimizer.state_dict(),
+            }, "checkpoints/best.pt")
+            print("  saved new best -> checkpoints/best.pt")

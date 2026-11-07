@@ -18,6 +18,13 @@ class DataLoader():
             transforms.ToTensor(),
             transforms.Normalize(MEAN, STD),
         ])
+        # no random augmentation for validation
+        self.val_tfm = transforms.Compose([
+            transforms.Resize(128),
+            transforms.CenterCrop(128),
+            transforms.ToTensor(),
+            transforms.Normalize(MEAN, STD),
+        ])
 
     def get_one_sample(self):
         img = self.ds['test'][0]['image']
@@ -41,6 +48,7 @@ class DataLoader():
         meta = self.ds['test'].select_columns(['caption', 'split'])
         self.captions = [self._captions(c) for c in meta['caption']]
         self.train_idx = [i for i, s in enumerate(meta['split']) if s == 'train']
+        self.val_idx = [i for i, s in enumerate(meta['split']) if s == 'val']
 
     def encode(self, text):
         """str -> (ids, mask), both (max_len,). mask is True on real tokens."""
@@ -50,7 +58,7 @@ class DataLoader():
         ids = ids + [self.vocab["<pad>"]] * (self.max_len - len(ids))
         return torch.tensor(ids), torch.tensor(mask)
 
-    def get_batch(self, batch_size=32, indices=None):
+    def get_batch(self, batch_size=32, indices=None, train=True):
         """Returns (images, token_ids, text_mask), row i of each belongs to the same
         Flickr30k image i; the caption is one of its 5, picked at random."""
         self._setup_text()
@@ -59,9 +67,10 @@ class DataLoader():
             pick = torch.randint(0, len(self.train_idx), (batch_size,)).tolist()
             indices = [self.train_idx[j] for j in pick]
 
+        tfm = self.train_tfm if train else self.val_tfm
         imgs, ids, masks = [], [], []
         for i in indices:
-            imgs.append(self.train_tfm(split[i]['image'].convert('RGB')))
+            imgs.append(tfm(split[i]['image'].convert('RGB')))
             caps = self.captions[i]
             t, m = self.encode(caps[torch.randint(0, len(caps), (1,)).item()])
             ids.append(t)
