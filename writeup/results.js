@@ -171,18 +171,9 @@ if (version === 'v1') {
     current = { vec: r.vec, val: valPos, scores };
     const q = r.qAttn.subarray(64, 128), m = Math.max(...q);
     heatCells.forEach((c, k) => { c.style.opacity = (0.72 * q[k] / m).toFixed(3); });
-    const order = [...scores.keys()].sort((a, b) => scores[b] - scores[a]).slice(0, 5);
-    $('best').innerHTML = order.map(c => `<li class="${refs.owner[c] === valPos ? 'own' : ''}" data-c="${c}"><span class="s">${scores[c].toFixed(3)}</span><span>${escapeHtml(refs.captions[c])}</span></li>`).join('');
     status.innerHTML = `Photo → 256 numbers in <b>${Math.round(r.ms)} ms</b>, in your browser · scored against 5,070 captions`;
     await scoreCaption();
   }
-  $('best').addEventListener('click', e => {
-    const li = e.target.closest('li');
-    if (!li) return;
-    caption.value = refs.captions[li.dataset.c];
-    caption.dataset.touched = '1';
-    scoreCaption();
-  });
 
   let typing = 0;
   const norm = t => t.toLowerCase().replace(/[^a-z0-9' ]+/g, ' ').replace(/\s+/g, ' ').trim();
