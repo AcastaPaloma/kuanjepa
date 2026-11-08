@@ -16,11 +16,11 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from dataloader import DataLoader
-from models.image_encoder import ImageEncoder
-from models.text_encoder import TextEncoder
-from models.predictor import Predictor
-from utilities import masked_mean
+from v1.dataloader import DataLoader
+from v1.models.image_encoder import ImageEncoder
+from v1.models.text_encoder import TextEncoder
+from v1.models.predictor import Predictor
+from v1.utilities import masked_mean
 
 device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
 

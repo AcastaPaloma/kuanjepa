@@ -2,8 +2,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from models.transformer import Block
-from dataloader import DataLoader
+from v1.models.transformer import Block
+from v1.dataloader import DataLoader
 
 class ImageEncoder(nn.Module):
     def __init__(self):

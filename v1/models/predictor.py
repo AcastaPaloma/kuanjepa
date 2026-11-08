@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from models.transformer import Block
+from v1.models.transformer import Block
 
 class Predictor(nn.Module):
     def __init__(self):

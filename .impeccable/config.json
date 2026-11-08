@@ -1,0 +1,26 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "writeup/style.css"
+        ],
+        "createdAt": "2026-11-08T07:55:34.155Z",
+        "reason": "Matches kuangrad's existing write-up style (its .note uses the same 3px yellow left border); the user asked for the same style"
+      },
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "writeup/results.css"
+        ],
+        "createdAt": "2026-11-08T07:55:34.172Z",
+        "reason": "Mirrors kuangrad's highlighted-row pattern (inset 3px yellow, e.g. .edge-lists li.is-hit); the user asked for the same style"
+      }
+    ]
+  }
+}

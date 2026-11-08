@@ -33,11 +33,11 @@ import torch.nn.functional as F
 from PIL import Image, ImageDraw
 from torchvision import transforms
 
-from dataloader import DataLoader
-from models.image_encoder import ImageEncoder
-from models.text_encoder import TextEncoder
-from models.predictor import Predictor
-from utilities import masked_mean
+from v1.dataloader import DataLoader
+from v1.models.image_encoder import ImageEncoder
+from v1.models.text_encoder import TextEncoder
+from v1.models.predictor import Predictor
+from v1.utilities import masked_mean
 
 torch.set_grad_enabled(False)
 OUT = os.path.join(ROOT, "writeup", "data")
