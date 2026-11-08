@@ -163,7 +163,7 @@ if (version === 'v1') {
       $('photo-note').textContent = `validation photo #${it.val}`;
       if (!caption.dataset.touched) caption.value = it.caption;
     }
-    status.innerHTML = 'Running the Image Encoder and the Predictor…';
+    status.textContent = 'Loading the weights (14 MB), then running the Image Encoder and the Predictor…';
     await ready;
     const r = await ask({ type: 'image', rgba: pixels(img) });
     if (token !== busy) return;
@@ -251,6 +251,6 @@ if (version === 'v1') {
     if (search) { if (!query.value) query.value = 'a dog running on the beach'; embedAll(); runSearch(); query.focus(); }
   }));
 
-  ready.then(r => { status.innerHTML = `Weights loaded · learned scale e^t = ${r.scale.toFixed(1)}`; }).catch(err => { status.textContent = `Could not load the model: ${err.message}`; });
+  ready.then(() => { if (!current) status.textContent = 'Weights loaded. Running the Image Encoder and the Predictor…'; }).catch(err => { status.textContent = `Could not load the model: ${err.message}`; });
   choose(0);
 }
