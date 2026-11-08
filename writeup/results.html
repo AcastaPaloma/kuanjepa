@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fbfbfa">
+  <meta name="description" content="pseudo-jepa's trained model running in your browser: pick or upload a photo, write a caption, and get a score, next to the training run's curves.">
+  <title>pseudo-jepa results · Kuan Yi Wang</title>
+  <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="./results.css">
+  <script defer src="./vendor/katex/katex.min.js"></script>
+  <script type="module" src="./results.js"></script>
+</head>
+<body class="results-page" data-version="v1">
+  <a class="skip-link" href="#reader">Skip to the training run</a>
+  <main class="workspace">
+    <section class="visual demo" aria-label="Try the trained model">
+      <div class="visual-head">
+        <span class="wordmark"><code>pseudo-jepa</code> <span>· v1 · in your browser</span></span>
+        <nav class="mode-tabs" aria-label="Demo mode"><button type="button" data-mode="photo" aria-pressed="true">Photo → caption</button><button type="button" data-mode="search" aria-pressed="false">Caption → photo</button></nav>
+      </div>
+      <div class="demo-body">
+        <div class="picker">
+          <div class="thumbs" id="thumbs" role="listbox" aria-label="Validation photos"></div>
+          <label class="upload">Your own photo<input type="file" id="upload" accept="image/*"></label>
+        </div>
+        <div class="mode mode-photo" id="mode-photo">
+          <div class="photo-row">
+            <figure class="photo" id="photo">
+              <img id="photo-img" alt="">
+              <div class="heat" id="heat" aria-hidden="true"></div>
+              <figcaption><label><input type="checkbox" id="show-heat"> where q looks</label><span id="photo-note"></span></figcaption>
+            </figure>
+            <div class="readout">
+              <label class="cap-label" for="caption">Write a caption</label>
+              <textarea id="caption" rows="2" spellcheck="false" autocomplete="off"></textarea>
+              <p class="score" id="score" aria-live="polite">–</p>
+              <div class="rank-bar" aria-hidden="true"><i id="rank-fill"></i></div>
+              <p class="rank" id="rank"></p>
+              <p class="unknown" id="unknown"></p>
+            </div>
+          </div>
+          <div class="best">
+            <h3>Its best matches among the 5,070 validation captions</h3>
+            <ol id="best"></ol>
+          </div>
+        </div>
+        <div class="mode mode-search" id="mode-search" hidden>
+          <input id="query" type="text" spellcheck="false" autocomplete="off" placeholder="a dog running on the beach">
+          <p class="search-note" id="search-note"></p>
+          <ol class="hits" id="hits"></ol>
+        </div>
+      </div>
+      <p class="demo-status" id="status">Loading the weights (14 MB)…</p>
+    </section>
+    <aside class="notes" aria-label="pseudo-jepa results">
+      <div class="reading-nav">
+        <nav class="page-tabs version-tabs" aria-label="Version"><a href="./results.html" aria-current="page">v1 · trained</a><a href="v2-results.html">v2 · JEPA</a></nav>
+        <nav class="page-tabs" aria-label="Page"><a href="./">Write-up</a><a href="results.html" aria-current="page">Results</a></nav>
+      </div>
+      <div class="reader" id="reader" tabindex="0" aria-label="The training run">
+        <div id="article"></div>
+      </div>
+    </aside>
+  </main>
+  <footer class="site-footer">Made by <a href="https://www.kuant.space" target="_blank" rel="noopener">Kuan Yi Wang</a> with <span role="img" aria-label="love">❤️</span></footer>
+  <noscript><div class="no-script">The demo needs JavaScript. The code is on <a href="https://github.com/AcastaPaloma/kuanjepa">GitHub</a>.</div></noscript>
+</body>
+</html>

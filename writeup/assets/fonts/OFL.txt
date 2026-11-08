@@ -1,0 +1,1 @@
+Excalifont (c) Excalidraw contributors, used under the SIL Open Font License 1.1 (https://openfontlicense.org). Files are the Latin and Latin Extended subsets shipped in @excalidraw/excalidraw 0.18.0.

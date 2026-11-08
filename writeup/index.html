@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fbfbfa">
+  <meta name="description" content="pseudo-jepa: a photo–caption model built from scratch in PyTorch, followed through one real forward pass, block by block.">
+  <title>pseudo-jepa · Kuan Yi Wang</title>
+  <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="./assets/fonts/Excalifont-Latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="./vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="./style.css">
+  <script defer src="./vendor/katex/katex.min.js"></script>
+  <script type="module" src="./app.js"></script>
+</head>
+<body data-version="v1">
+  <a class="skip-link" href="#reader">Skip to write-up</a>
+  <main class="workspace">
+    <section class="visual" tabindex="0" aria-label="The forward pass for the current passage. Left and right arrows step through it">
+      <div class="visual-head"><span class="wordmark"><code>pseudo-jepa</code> <span>· v1 · one photo, one caption</span></span><span class="step-hint" aria-hidden="true"><span class="step-hint-click">click, then </span><kbd>←</kbd> <kbd>→</kbd> to step</span><span id="step-counter"></span></div>
+      <div class="stage" id="stage"><p class="stage-loading">Loading the forward pass…</p></div>
+      <div class="stage-bar">
+        <button type="button" id="beat-prev" aria-label="Previous moment">←</button>
+        <button type="button" id="beat-play" class="play">Play</button>
+        <button type="button" id="beat-next" aria-label="Next moment">→</button>
+        <p id="beat-label" aria-live="polite"></p>
+        <figure class="minimap" id="minimap" title="My sketch of the model. Click to enlarge"><button type="button" class="minimap-size" aria-label="Enlarge the drawing">⤢</button></figure>
+      </div>
+    </section>
+    <aside class="notes" aria-label="pseudo-jepa write-up">
+      <div class="reading-nav">
+        <nav class="page-tabs version-tabs" aria-label="Version"><a href="./" aria-current="page">v1 · trained</a><a href="v2.html">v2 · JEPA</a></nav>
+        <nav class="page-tabs" aria-label="Page"><a href="./" aria-current="page">Write-up</a><a href="results.html">Results</a></nav>
+        <button id="contents-toggle" type="button" aria-expanded="false" aria-controls="contents-menu">Contents <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg></button>
+      </div>
+      <nav id="contents-menu" aria-label="Write-up contents" hidden><div id="toc"></div></nav>
+      <div class="reader" id="reader" tabindex="0" aria-label="Read the pseudo-jepa write-up">
+        <div id="article"></div>
+      </div>
+    </aside>
+  </main>
+  <footer class="site-footer">Made by <a href="https://www.kuant.space" target="_blank" rel="noopener">Kuan Yi Wang</a> with <span role="img" aria-label="love">❤️</span></footer>
+  <noscript><div class="no-script">This write-up needs JavaScript. The code is on <a href="https://github.com/AcastaPaloma/kuanjepa">GitHub</a>.</div></noscript>
+</body>
+</html>
