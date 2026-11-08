@@ -16,7 +16,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from v1.dataloader import DataLoader
+from dataloader import DataLoader
 from v1.models.image_encoder import ImageEncoder
 from v1.models.text_encoder import TextEncoder
 from v1.models.predictor import Predictor

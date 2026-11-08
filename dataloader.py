@@ -105,9 +105,9 @@ class PairDataset(torch.utils.data.Dataset):
     """(image, ids, mask) per Flickr30k index, so torch's DataLoader can decode in parallel workers.
     Train: random augmentation + one of the 5 captions at random.
     Val:   fixed center crop + caption 0, so val loss is comparable across epochs."""
-    def __init__(self, DL, indices, train=True):
+    def __init__(self, DL, indices, train=True, raw=False):
         DL._setup_text()
-        self.DL, self.indices, self.train = DL, indices, train
+        self.DL, self.indices, self.train, self.raw = DL, indices, train, raw
 
     def __len__(self):
         return len(self.indices)
@@ -118,8 +118,17 @@ class PairDataset(torch.utils.data.Dataset):
         tfm = self.DL.train_tfm if self.train else self.DL.val_tfm
         caps = self.DL.captions[i]
         cap = caps[torch.randint(0, len(caps), (1,)).item()] if self.train else caps[0]
+        if self.raw:
+            return tfm(img), list(caps)           # all captions; batch with collate_raw
         ids, mask = self.DL.encode(cap)
         return tfm(img), ids, mask
+
+
+def collate_raw(batch):
+    """For PairDataset(raw=True): -> (B, 3, 128, 128) tensor, list of B lists of caption strings.
+    (torch's default collate would transpose the per-image caption lists.)"""
+    imgs, caps = zip(*batch)
+    return torch.stack(imgs), list(caps)
 
 
 if __name__ == "__main__":

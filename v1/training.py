@@ -14,7 +14,7 @@ from v1.models.image_encoder import ImageEncoder
 from v1.models.text_encoder import TextEncoder
 from v1.models.predictor import Predictor
 
-from v1.dataloader import DataLoader, PairDataset
+from dataloader import DataLoader, PairDataset
 from torch.utils.data import DataLoader as TorchDataLoader
 from v1.utilities import InfoNCE, masked_mean
 

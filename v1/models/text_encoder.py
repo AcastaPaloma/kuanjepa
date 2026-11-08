@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from v1.models.transformer import Block
-from v1.dataloader import DataLoader
+from dataloader import DataLoader
 
 class TextEncoder(nn.Module):
     def __init__(self, vocab_size, max_len=32, d=256, depth=6):

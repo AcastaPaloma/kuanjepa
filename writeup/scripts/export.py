@@ -33,7 +33,7 @@ import torch.nn.functional as F
 from PIL import Image, ImageDraw
 from torchvision import transforms
 
-from v1.dataloader import DataLoader
+from dataloader import DataLoader
 from v1.models.image_encoder import ImageEncoder
 from v1.models.text_encoder import TextEncoder
 from v1.models.predictor import Predictor
