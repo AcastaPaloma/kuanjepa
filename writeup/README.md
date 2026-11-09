@@ -6,7 +6,8 @@ as a minimap.
 
 **To change the words, edit `content/*.md`.** No build step: the pages read these files as they are.
 
-- `content/v1.md`, `content/v2.md`: the two write-ups (v1: the trained model, v2: the planned JEPA)
+- `content/v1.md`: the v1 write-up (the scroll-driven forward pass)
+- `content/v2.md`: the v2 tab, a side-by-side comparison of v1, v2 and VL-JEPA. Tables are plain `| a | b |` rows
 - `content/results-v1.md`, `content/results-v2.md`: the Results tabs
 - Each heading is one reading step. The `<!-- id · chapter · scene · map -->` line under it picks the animation and
   the part of the drawing to frame; leave `scene` and `map` names as they are.
@@ -14,7 +15,8 @@ as a minimap.
 Code:
 
 - `app.js`: the reader (scroll tracking, Contents, arrow keys); `md.js`: markdown → steps
-- `stage.js`: the SVG world, the camera and the beat player; `scenes-v1.js`, `scenes-v2.js`: what each scene draws
+- `stage.js`: the SVG world, the camera and the beat player; `scenes-v1.js`: what each scene draws
+- `v2.html`, `compare.js`: the v2 comparison page
 - `minimap.js` + `assets/drawing.svg`: the Excalidraw drawing with the yellow box; `assets/fonts/`: Excalifont (OFL)
 - `results.html`, `results.js`, `results.css`: the live demo and the training curves
 - `infer.js`, `worker.js`: the forward pass in plain JavaScript, run in a Web Worker

@@ -4,42 +4,23 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#fbfbfa">
-  <meta name="description" content="pseudo-jepa v2: the planned JEPA version, hiding parts of the photo and caption and predicting a slow copy of what is missing.">
+  <meta name="description" content="pseudo-jepa v2 side by side with v1 and with Meta's VL-JEPA: frozen V-JEPA 2 and EmbeddingGemma, a small trained predictor, masked inputs and an L2 loss.">
   <title>pseudo-jepa v2 · Kuan Yi Wang</title>
   <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
-  <link rel="preload" href="./assets/fonts/Excalifont-Latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="./vendor/katex/katex.min.css">
   <link rel="stylesheet" href="./style.css">
   <script defer src="./vendor/katex/katex.min.js"></script>
-  <script type="module" src="./app.js"></script>
+  <script type="module" src="./compare.js"></script>
 </head>
-<body data-version="v2">
-  <a class="skip-link" href="#reader">Skip to write-up</a>
-  <main class="workspace">
-    <section class="visual" tabindex="0" aria-label="The forward pass for the current passage. Left and right arrows step through it">
-      <div class="visual-head"><span class="wordmark"><code>pseudo-jepa</code> <span>· v2 · planned, not trained</span></span><span class="step-hint" aria-hidden="true"><span class="step-hint-click">click, then </span><kbd>←</kbd> <kbd>→</kbd> to step</span><span id="step-counter"></span></div>
-      <div class="stage" id="stage"><p class="stage-loading">Loading the forward pass…</p></div>
-      <div class="stage-bar">
-        <button type="button" id="beat-prev" aria-label="Previous moment">←</button>
-        <button type="button" id="beat-play" class="play">Play</button>
-        <button type="button" id="beat-next" aria-label="Next moment">→</button>
-        <p id="beat-label" aria-live="polite"></p>
-        <figure class="minimap" id="minimap" title="My sketch of the model. Click to enlarge"><button type="button" class="minimap-size" aria-label="Enlarge the drawing">⤢</button></figure>
-      </div>
-    </section>
-    <aside class="notes" aria-label="pseudo-jepa write-up">
-      <div class="reading-nav">
-        <nav class="page-tabs version-tabs" aria-label="Version"><a href="./">v1 · trained</a><a href="v2.html" aria-current="page">v2 · JEPA</a></nav>
-        <nav class="page-tabs" aria-label="Page"><a href="v2.html" aria-current="page">Write-up</a><a href="v2-results.html">Results</a></nav>
-        <button id="contents-toggle" type="button" aria-expanded="false" aria-controls="contents-menu">Contents <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg></button>
-      </div>
-      <nav id="contents-menu" aria-label="Write-up contents" hidden><div id="toc"></div></nav>
-      <div class="reader" id="reader" tabindex="0" aria-label="Read the pseudo-jepa write-up">
-        <div id="article"></div>
-      </div>
-    </aside>
-  </main>
+<body class="compare-page" data-version="v2">
+  <a class="skip-link" href="#article">Skip to the comparison</a>
+  <header class="compare-bar">
+    <span class="wordmark"><code>pseudo-jepa</code> <span>· v2 · side by side</span></span>
+    <nav class="page-tabs version-tabs" aria-label="Version"><a href="./">v1 · trained</a><a href="v2.html" aria-current="page">v2 · JEPA</a></nav>
+    <nav class="page-tabs" aria-label="Page"><a href="v2.html" aria-current="page">Comparison</a><a href="v2-results.html">Results</a></nav>
+  </header>
+  <main class="compare-main"><div id="article"></div></main>
   <footer class="site-footer">Made by <a href="https://www.kuant.space" target="_blank" rel="noopener">Kuan Yi Wang</a> with <span role="img" aria-label="love">❤️</span></footer>
-  <noscript><div class="no-script">This write-up needs JavaScript. The code is on <a href="https://github.com/AcastaPaloma/kuanjepa">GitHub</a>.</div></noscript>
+  <noscript><div class="no-script">This page needs JavaScript. The code is on <a href="https://github.com/AcastaPaloma/kuanjepa">GitHub</a>.</div></noscript>
 </body>
 </html>

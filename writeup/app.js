@@ -79,7 +79,7 @@ const [imgTokens, txtTokens, attn, input, ...conv] = await Promise.all([
   loadImage('./data/' + trace.image.input), ...trace.conv.map(c => readSprite('./data/' + c.sprite))
 ]);
 const { buildV1 } = await import('./scenes-v1.js');
-const build = version === 'v1' ? buildV1 : (await import('./scenes-v2.js')).buildV2;
+const build = buildV1; // v2 is a plain comparison page now (v2.html, compare.js)
 const stage = createStage(document.getElementById('stage'), {
   build: world => build(world, { trace, metrics, sprites: { imgTokens, txtTokens, attn, input, conv } })
 });

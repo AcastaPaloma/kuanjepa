@@ -31,6 +31,11 @@ const meta = line => Object.fromEntries(line.replace(/^<!--|-->$/g, '').split('Â
 const blockHtml = para => {
   const lines = para.split('\n');
   if (lines.every(l => /^- /.test(l))) return `<ul>${lines.map(l => `<li>${rich(l.slice(2))}</li>`).join('')}</ul>`;
+  if (lines.every(l => /^\|/.test(l))) { // a table: the first row is the header, a row of dashes is skipped
+    const rows = lines.filter(l => !/^\|[\s:|-]+\|?\s*$/.test(l)).map(l => l.trim().replace(/^\||\|$/g, '').split('|').map(c => c.trim()));
+    const [head, ...body] = rows;
+    return `<div class="table-wrap"><table class="compare"><thead><tr>${head.map(c => `<th>${rich(c)}</th>`).join('')}</tr></thead><tbody>${body.map(r => `<tr>${r.map((c, i) => i ? `<td>${rich(c)}</td>` : `<th scope="row">${rich(c)}</th>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+  }
   if (lines.every(l => /^>/.test(l))) return `<p class="note">${rich(lines.map(l => l.replace(/^> ?/, '')).join(' '))}</p>`;
   const text = lines.join(' ').trim();
   const widget = /^\{\{\s*([\w-]+)\s*\}\}$/.exec(text); // {{name}}: a chart or table the page fills in
