@@ -208,26 +208,13 @@ a { color: var(--accent); }
   *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
 }
 
-/* ---- the v2 tab: one plain page with the comparison tables ------------------------------------------------------ */
-.compare-page { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; }
-.compare-bar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; padding: 10px clamp(20px, 4vw, 56px); background: #fbfbfaf2; backdrop-filter: blur(6px); border-bottom: 1px solid var(--rule); }
-.compare-bar .wordmark { margin-right: auto; font: 13px var(--mono); }
-.compare-bar .wordmark span { color: var(--muted); }
-.compare-bar .wordmark code { font: inherit; background: #efeee9; padding: .15em .4em; border-radius: 3px; }
-.compare-main { flex: 1; }
-.compare-main #article { max-width: 1120px; padding: 8px clamp(20px, 4vw, 56px) 96px; }
-.compare-main .reading-block > p, .compare-main .reading-block > ul, .compare-main .reading-block > .note { max-width: 720px; }
+/* ---- comparison tables in the article (v2): v1 | v2 | VL-JEPA ------------------------------------------------- */
 .table-wrap { margin: 4px 0 28px; overflow-x: auto; scrollbar-width: thin; }
-.compare { width: 100%; min-width: 760px; border-collapse: collapse; font: 14.5px/1.5 Arial, sans-serif; }
-.compare th, .compare td { text-align: left; vertical-align: top; padding: 10px 14px; border-bottom: 1px solid #ecebe6; }
-.compare thead th { font-weight: 400; font-size: 13px; color: var(--secondary); border-bottom: 1px solid var(--rule); background: var(--paper); }
-.compare thead th strong { font: 600 15px Georgia, serif; color: var(--ink); }
-.compare tbody th { width: 12em; font-weight: 400; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.compare { width: 100%; min-width: 520px; border-collapse: collapse; font: 13.5px/1.45 Arial, sans-serif; }
+.compare th, .compare td { text-align: left; vertical-align: top; padding: 8px 10px; border-bottom: 1px solid #ecebe6; }
+.compare thead th { font-weight: 400; font-size: 12px; color: var(--secondary); border-bottom: 1px solid var(--rule); }
+.compare thead th strong { font: 600 14.5px Georgia, serif; color: var(--ink); }
+.compare tbody th { width: 7.5em; font-weight: 400; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
 .compare td strong { color: var(--accent); font-weight: 600; }
 .compare td:nth-child(3) { background: #f5c5180f; }
 .compare code { font: .85em var(--mono); background: #efeee9; padding: .1em .3em; border-radius: 3px; }
-@media (max-width: 760px) {
-  .compare-bar { padding: 8px 14px; }
-  .compare-bar .wordmark { width: 100%; }
-  .compare { font-size: 13.5px; }
-}

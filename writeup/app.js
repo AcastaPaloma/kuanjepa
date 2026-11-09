@@ -37,7 +37,7 @@ const blocks = steps.map((step, i) => {
   section.id = step.id;
   const heading = step.first
     ? `<header class="title-block"><h1><span>${escapeHtml(step.title.split(',')[0])}</span>${escapeHtml(step.title.slice(step.title.split(',')[0].length))}</h1>
-       <p class="subtitle">${version === 'v1' ? 'Photos and captions, built from scratch, followed through one forward pass' : 'Fill in the blanks: the JEPA version, planned'}</p>
+       <p class="subtitle">${version === 'v1' ? 'Photos and captions, built from scratch, followed through one forward pass' : 'Frozen V-JEPA 2 and EmbeddingGemma, a small trained predictor, next to v1 and VL-JEPA'}</p>
        <p class="byline">Kuan Yi Wang · <a href="https://github.com/AcastaPaloma/kuanjepa" target="_blank" rel="noopener">source on GitHub</a></p></header>`
     : `${step.chapter ? `<p class="chapter-kicker">${escapeHtml(step.chapter)}</p>` : ''}<h${step.level}>${rich(step.title)}</h${step.level}>`;
   section.innerHTML = heading + step.html;
@@ -48,7 +48,7 @@ const end = document.createElement('footer');
 end.className = 'article-end';
 end.innerHTML = version === 'v1'
   ? 'Every picture on the left is recorded from the trained checkpoint by <code>writeup/scripts/export.py</code>: the same weights the Results tab runs in your browser. <a href="https://github.com/AcastaPaloma/kuanjepa" target="_blank" rel="noopener">The code is on GitHub</a>.'
-  : 'v2 is a plan. When it is trained, its Results tab gets the same live demo as v1. <a href="./">Back to v1</a>.';
+  : 'Every picture on the left is recorded by <code>writeup/scripts/export_v2.py</code> from the frozen V-JEPA 2, the cached EmbeddingGemma targets and the predictor checkpoint saved during training. VL-JEPA figures are from <a href="https://arxiv.org/abs/2512.10942" target="_blank" rel="noopener">the paper</a>.';
 article.append(end);
 
 // --- contents ----------------------------------------------------------------------------------------------------
@@ -78,11 +78,16 @@ const [imgTokens, txtTokens, attn, input, ...conv] = await Promise.all([
   readSprite('./data/' + trace.tokens.sprite), readSprite('./data/' + trace.text.sprite), readSprite('./data/' + trace.attn.sprite),
   loadImage('./data/' + trace.image.input), ...trace.conv.map(c => readSprite('./data/' + c.sprite))
 ]);
-const { buildV1 } = await import('./scenes-v1.js');
-const build = buildV1; // v2 is a plain comparison page now (v2.html, compare.js)
-const stage = createStage(document.getElementById('stage'), {
-  build: world => build(world, { trace, metrics, sprites: { imgTokens, txtTokens, attn, input, conv } })
-});
+const data = { trace, metrics, sprites: { imgTokens, txtTokens, attn, input, conv } };
+let build;
+if (version === 'v1') build = (await import('./scenes-v1.js')).buildV1;
+else {
+  data.v2 = await getJson('./data/v2trace.json');
+  const [norms, patchTokens, cellTokens, captions] = await Promise.all(['patch_norms', 'patch_tokens', 'cell_tokens', 'captions'].map(n => readSprite(`./data/v2/${n}.png`)));
+  data.v2sprites = { norms, patchTokens, cellTokens, captions };
+  build = (await import('./scenes-v2.js')).buildV2;
+}
+const stage = createStage(document.getElementById('stage'), { build: world => build(world, data) });
 stage.onChange(({ scene, beat, playing, count }) => {
   beatLabel.innerHTML = `<span class="n">${beat + 1}/${count}</span>${escapeHtml(scene.beats[beat])}`;
   playButton.textContent = playing ? 'Pause' : beat >= count - 1 ? 'Replay' : 'Play';
