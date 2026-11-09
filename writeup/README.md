@@ -19,6 +19,9 @@ Code:
 - `minimap.js` + `assets/drawing.svg`: the Excalidraw drawing with the yellow box; `assets/fonts/`: Excalifont (OFL)
 - `results.html`, `results.js`, `results.css`: the live demo and the training curves
 - `infer.js`, `worker.js`: the forward pass in plain JavaScript, run in a Web Worker
+- `v2-results.html`, `demo-v2.js`: v2's Results tab, the Reveal game and image arithmetic. They play back answers
+  recorded by `scripts/export_v2_results.py` (`reveal.json`, `arith.json`/`.bin`, `v2results.json`, `v2/val/`), because
+  V-JEPA 2 and EmbeddingGemma are too big for a browser
 - `data/`: generated, do not edit by hand. `scripts/export.py` writes v1's (from `checkpoints/best.pt` and the training log); `scripts/export_v2.py` writes `v2trace.json` and `v2/` from the frozen V-JEPA 2, the cached EmbeddingGemma targets and `v2/checkpoints/best_masked.pt`. Rerun it when v2 finishes to show the final predictor
 - `vendor/katex/`: KaTeX (MIT)
 

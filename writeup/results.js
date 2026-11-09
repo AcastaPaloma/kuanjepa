@@ -13,9 +13,9 @@ const katexReady = new Promise(resolve => {
 });
 
 // ---- the article ------------------------------------------------------------------------------------------------
-const [source, metrics] = await Promise.all([
+const [source, metrics, v2] = await Promise.all([
   fetch(`./content/results-${version}.md`, { cache: 'no-cache' }).then(r => r.text()),
-  getJson('./data/metrics.json'), katexReady
+  getJson('./data/metrics.json'), version === 'v2' ? getJson('./data/v2results.json') : null, katexReady
 ]);
 parseSteps(source).forEach((step, i) => {
   const section = document.createElement('section');
@@ -26,12 +26,12 @@ parseSteps(source).forEach((step, i) => {
 });
 
 const NS = 'http://www.w3.org/2000/svg';
-function lineChart(series, { yMax, yMin = 0, xMax, xTitle, yTicks, marks = [], h = 260 }) {
+function lineChart(series, { yMax, yMin = 0, xMax, xTitle, yTicks, xTicks = [0, 50, 100, 150, 200], marks = [], h = 260 }) {
   const W = 640, H = h, l = 40, r = 12, t = 12, b = 34;
   const px = x => l + (x / xMax) * (W - l - r), py = y => t + (1 - (y - yMin) / (yMax - yMin)) * (H - t - b);
   const parts = [];
   yTicks.forEach(v => parts.push(`<line class="grid" x1="${l}" x2="${W - r}" y1="${py(v)}" y2="${py(v)}"/><text class="axis" x="${l - 6}" y="${py(v) + 4}" text-anchor="end">${v}</text>`));
-  [0, 50, 100, 150, 200].filter(x => x <= xMax).forEach(x => parts.push(`<text class="axis" x="${px(x)}" y="${H - b + 16}" text-anchor="middle">${x}</text>`));
+  xTicks.filter(x => x <= xMax).forEach(x => parts.push(`<text class="axis" x="${px(x)}" y="${H - b + 16}" text-anchor="middle">${x}</text>`));
   parts.push(`<text class="axis-title" x="${(l + W - r) / 2}" y="${H - 4}" text-anchor="middle">${xTitle}</text>`);
   marks.forEach(m => parts.push(m(px, py)));
   series.forEach(s => parts.push(`<path d="${s.points.map(([x, y], i) => `${i ? 'L' : 'M'}${px(x).toFixed(1)} ${py(y).toFixed(1)}`).join('')}" fill="none" stroke="${s.color}" stroke-width="${s.width || 2}" stroke-opacity="${s.opacity || 1}" ${s.dash ? `stroke-dasharray="${s.dash}"` : ''}/>`));
@@ -59,6 +59,38 @@ const widgets = {
   ], { yMin: 10, yMax: 35, xMax: 200, xTitle: 'epoch', yTicks: [10, 20, 30], h: 200, marks: [
     (px, py) => `<line x1="${px(metrics.best_epoch)}" x2="${px(metrics.best_epoch)}" y1="${py(35)}" y2="${py(10)}" stroke="var(--yellow)" stroke-width="2"/>`
   ] }),
+  // ---- v2: next to v1 and the two baselines
+  'v2-retrieval': () => {
+    const F = metrics.final, G = v2.final, Bm = v2.baselines.mean, Br = v2.baselines.ridge;
+    const cells = (r, best) => [1, 5, 10].map(k => `<td class="n${best ? ' best' : ''}">${pct(r[k] ?? r[String(k)])}</td>`).join('');
+    const row = (name, a, b, best) => `<tr${best ? ' class="is-v2"' : ''}><td>${name}</td>${cells(a, best)}${cells(b, best)}</tr>`;
+    return `<table class="recall-table wide"><thead><tr><th></th><th colspan="3">photo → caption</th><th colspan="3">caption → photo</th></tr>
+      <tr class="sub"><th></th><th>R@1</th><th>R@5</th><th>R@10</th><th>R@1</th><th>R@5</th><th>R@10</th></tr></thead><tbody>
+      ${row('<b>v2</b>, predictor', G.i2t, G.t2i, true)}
+      ${row('ridge regression <span>on the averaged V-JEPA 2 tokens</span>', Br.i2t, Br.t2i)}
+      ${row('v1, from scratch', F.i2t, F.t2i)}
+      ${row('always the average target', Bm.i2t, Bm.t2i)}
+      <tr class="chance"><td>at random</td><td class="n">0.1%</td><td class="n">0.5%</td><td class="n">1.0%</td><td class="n">0.1%</td><td class="n">0.5%</td><td class="n">1.0%</td></tr></tbody></table>`;
+  },
+  'v2-loss': () => {
+    const spe = v2.steps_per_epoch;
+    return lineChart([
+      { points: v2.steps.map(([s, l]) => [s / spe, Math.min(l, 330)]), color: 'var(--accent)', width: 1, opacity: .45, label: 'training loss, per step (photo with holes)' },
+      { points: v2.epochs.map(e => [e.epoch + 1, e.val_loss]), color: 'var(--grad)', width: 2.4, label: 'validation loss, per epoch (whole photo)' }
+    ], { yMin: 150, yMax: 320, xMax: 30, xTicks: [0, 10, 20, 30], xTitle: 'epoch', yTicks: [150, 200, 250, 300] });
+  },
+  'v2-recall': () => lineChart([
+    { points: v2.epochs.map(e => [e.epoch + 1, e.t2i[0] * 100]), color: 'var(--neg)', label: 'caption → photo, R@1' },
+    { points: v2.epochs.map(e => [e.epoch + 1, e.i2t[0] * 100]), color: 'var(--accent)', label: 'photo → caption, R@1' },
+    { points: [[0, metrics.final.i2t['1'] * 100], [30, metrics.final.i2t['1'] * 100]], color: 'var(--accent)', width: 1.2, dash: '5 5', label: 'v1’s final, photo → caption' }
+  ], { yMax: 40, xMax: 30, xTicks: [0, 10, 20, 30], xTitle: 'epoch (all 5,070 validation captions, all 1,014 photos)', yTicks: [0, 10, 20, 30, 40], h: 220 }),
+  'v2-spread': () => {
+    const spe = v2.steps_per_epoch, every = v2.steps.filter((_, i) => i % 4 === 0);
+    return lineChart([
+      { points: every.map(([s, , , t]) => [s / spe, t]), color: 'var(--muted)', width: 1.6, label: 'spread of the targets' },
+      { points: every.map(([s, , p]) => [s / spe, p]), color: 'var(--accent)', width: 1.6, label: 'spread of v2’s guesses' }
+    ], { yMin: 0, yMax: 0.8, xMax: 30, xTicks: [0, 10, 20, 30], xTitle: 'epoch', yTicks: [0, 0.2, 0.4, 0.6, 0.8], h: 200 });
+  },
   retrieval: () => {
     const F = metrics.final;
     const row = (name, r) => `<tr><td>${name}</td><td class="n">${pct(r['1'])}</td><td class="n">${pct(r['5'])}</td><td class="n">${pct(r['10'])}</td></tr>`;
@@ -70,10 +102,11 @@ const widgets = {
 };
 article.querySelectorAll('.widget').forEach(fig => {
   const make = widgets[fig.dataset.widget];
-  if (make) { fig.classList.add(fig.dataset.widget === 'retrieval' ? 'table' : 'chart'); fig.innerHTML = make(); }
+  if (make) { fig.classList.add(/retrieval/.test(fig.dataset.widget) ? 'table' : 'chart'); fig.innerHTML = make(); }
 });
 
-// ---- the demo (v1) ----------------------------------------------------------------------------------------------
+// ---- the demos ---------------------------------------------------------------------------------------------------
+if (version === 'v2') await import('./demo-v2.js');
 if (version === 'v1') {
   const $ = id => document.getElementById(id);
   const status = $('status');

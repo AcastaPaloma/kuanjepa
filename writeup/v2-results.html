@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#fbfbfa">
-  <meta name="description" content="pseudo-jepa v2 results: still training, and what will be measured.">
+  <meta name="description" content="pseudo-jepa v2 results: race the model as a photo is uncovered tile by tile, add and subtract words from a photo, and the training run next to v1.">
   <title>pseudo-jepa v2 results · Kuan Yi Wang</title>
   <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="./vendor/katex/katex.min.css">
@@ -14,25 +14,74 @@
   <script type="module" src="./results.js"></script>
 </head>
 <body class="results-page" data-version="v2">
-  <a class="skip-link" href="#reader">Skip to the plan</a>
+  <a class="skip-link" href="#reader">Skip to the training run</a>
   <main class="workspace">
-    <section class="visual demo" aria-label="v2 is still training">
-      <div class="visual-head"><span class="wordmark"><code>pseudo-jepa</code> <span>· v2 · training</span></span></div>
-      <div class="empty-state">
-        <img src="./assets/drawing.svg" alt="My sketch of v1, which v2 builds on">
-        <p>Training now. When it finishes, its numbers go next to <a href="./results.html">v1’s</a>.</p>
+    <section class="visual demo demo-v2" aria-label="Play with v2">
+      <div class="visual-head">
+        <span class="wordmark"><code>pseudo-jepa</code> <span>· v2 · recorded on my Mac</span></span>
+        <nav class="mode-tabs" aria-label="Demo"><button type="button" data-mode="reveal" aria-pressed="true">Reveal</button><button type="button" data-mode="arith" aria-pressed="false">Arithmetic</button></nav>
       </div>
+
+      <div class="demo-body" id="mode-reveal">
+        <p class="demo-lede">A photo is uncovered one tile at a time. After every tile, v2 guesses a caption from the 145,000 it trained on. Can you tell what it is before it can?</p>
+        <div class="photo-picks" id="reveal-picks" role="listbox" aria-label="Photos to uncover"></div>
+        <div class="reveal-row">
+          <div class="reveal-stage">
+            <div class="tiles" id="tiles" aria-live="polite"><img id="reveal-img" alt=""><div class="cover" id="cover"></div></div>
+            <div class="reveal-controls">
+              <button type="button" id="reveal-one" class="primary">Uncover a tile</button>
+              <button type="button" id="reveal-auto">Play</button>
+              <button type="button" id="reveal-know">I know it</button>
+              <span class="tile-count" id="tile-count">0 / 64</span>
+            </div>
+          </div>
+          <div class="guesses">
+            <section class="guess-col honest">
+              <h3>v2 <span>the encoder only sees the uncovered tiles</span></h3>
+              <p class="guess-main" id="guess-before">–</p>
+              <ol class="guess-alt" id="alt-before"></ol>
+              <p class="guess-rank" id="rank-before"></p>
+            </section>
+            <section class="guess-col leaky">
+              <h3>leaky v2 <span>the encoder saw the whole photo, then tiles were hidden</span></h3>
+              <p class="guess-main" id="guess-after">–</p>
+              <p class="guess-rank" id="rank-after"></p>
+            </section>
+          </div>
+        </div>
+        <figure class="rank-chart" id="rank-chart" aria-label="Rank of the photo's own caption after each tile"></figure>
+        <div class="verdict" id="verdict" hidden></div>
+      </div>
+
+      <div class="demo-body" id="mode-arith" hidden>
+        <p class="demo-lede">v2 turns a photo into a point in EmbeddingGemma's text space, so words can be added to it. Take a photo, subtract a word, add another, and look for the nearest validation photos. Sometimes it works.</p>
+        <div class="photo-picks" id="arith-picks" role="listbox" aria-label="Starting photos"></div>
+        <div class="equation">
+          <figure class="eq-photo"><img id="arith-img" alt=""><figcaption id="arith-cap"></figcaption></figure>
+          <span class="eq-op">−</span>
+          <label class="eq-word"><span>word</span><select id="arith-minus"></select></label>
+          <span class="eq-op">+</span>
+          <label class="eq-word"><span>word</span><select id="arith-plus"></select></label>
+          <span class="eq-op">=</span>
+        </div>
+        <div class="presets" id="arith-presets"></div>
+        <ol class="hits arith-hits" id="arith-hits"></ol>
+        <p class="search-note" id="arith-note"></p>
+      </div>
+
+      <p class="demo-status" id="status">Loading what was recorded…</p>
     </section>
     <aside class="notes" aria-label="pseudo-jepa v2 results">
       <div class="reading-nav">
         <nav class="page-tabs version-tabs" aria-label="Version"><a href="./results.html">v1 · trained</a><a href="v2-results.html" aria-current="page">v2 · JEPA</a></nav>
         <nav class="page-tabs" aria-label="Page"><a href="v2.html">Write-up</a><a href="v2-results.html" aria-current="page">Results</a></nav>
       </div>
-      <div class="reader" id="reader" tabindex="0" aria-label="The plan for v2">
+      <div class="reader" id="reader" tabindex="0" aria-label="The v2 training run">
         <div id="article"></div>
       </div>
     </aside>
   </main>
   <footer class="site-footer">Made by <a href="https://www.kuant.space" target="_blank" rel="noopener">Kuan Yi Wang</a> with <span role="img" aria-label="love">❤️</span></footer>
+  <noscript><div class="no-script">The demos need JavaScript. The code is on <a href="https://github.com/AcastaPaloma/kuanjepa">GitHub</a>.</div></noscript>
 </body>
 </html>
